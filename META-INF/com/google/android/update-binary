@@ -29,7 +29,7 @@ ui_print " ";
 ui_print "Mounting...";
 mount /data;
 mount /cache;
-suimg=$(ls /data/su.img || ls /cache/su.img || ls /data/magisk_merge.img || ls /data/magisk.img || ls /cache/magisk.img) 2>/dev/null;
+suimg=$(ls /data/magisk_merge.img || ls /data/su.img || ls /cache/su.img || ls /data/magisk.img || ls /cache/magisk.img) 2>/dev/null;
 mnt=$dev/$(basename $suimg .img);
 if [ "$suimg" ]; then
   umount $mnt;
