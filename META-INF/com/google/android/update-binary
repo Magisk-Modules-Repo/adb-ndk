@@ -50,10 +50,15 @@ if [ "$suimg" ]; then
   esac;
   bin=$mnt$magisk/bin;
 else
-  mount -o rw,remount /system;
-  mount /system;
-  test -f /system/system/build.prop && root=/system;
-  bin=$root/system/xbin;
+  mnt=$(dirname `find /data -name supersu_is_here | head -n1`);
+  if [ -e "$mnt" ]; then
+    bin=$mnt/bin;
+  else
+    mount -o rw,remount /system;
+    mount /system;
+    test -f /system/system/build.prop && root=/system;
+    bin=$root/system/xbin;
+  fi;
 fi;
 
 ui_print " ";
