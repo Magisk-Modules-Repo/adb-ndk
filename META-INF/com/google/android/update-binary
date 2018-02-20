@@ -12,6 +12,7 @@ $BOOTMODE || ps -A 2>/dev/null | grep zygote | grep -v grep >/dev/null && BOOTMO
 if $BOOTMODE; then
   OUTFD=/proc/self/fd/0;
   dev=/dev;
+  devtmp=/dev/tmp;
   if [ ! -f /data/$adb/magisk_merge.img ]; then
     /system/bin/make_ext4fs -l 64M /data/$adb/magisk_merge.img >/dev/null;
   fi;
@@ -38,7 +39,7 @@ if [ -e /data/$adb/magisk -a ! -e /data/$adb/magisk.img ]; then
 fi;
 
 suimg=$(ls /data/$adb/magisk_merge.img || ls /data/su.img || ls /cache/su.img || ls /data/$adb/magisk.img || ls /cache/magisk.img) 2>/dev/null;
-mnt=$dev/$(basename $suimg .img);
+mnt=$devtmp/$(basename $suimg .img);
 if [ "$suimg" ]; then
   umount $mnt;
   test ! -e $mnt && mkdir $mnt;
