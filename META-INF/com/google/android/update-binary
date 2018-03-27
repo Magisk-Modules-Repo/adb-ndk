@@ -14,7 +14,7 @@ if $BOOTMODE; then
   dev=/dev;
   devtmp=/dev/tmp;
   if [ ! -f /data/$adb/magisk_merge.img ]; then
-    /system/bin/make_ext4fs -l 64M /data/$adb/magisk_merge.img >/dev/null;
+    (/system/bin/make_ext4fs -b 4096 -l 64M /data/$adb/magisk_merge.img || /system/bin/mke2fs -b 4096 -t ext4 /data/$adb/magisk_merge.img 64M) >/dev/null;
   fi;
 fi;
 
@@ -35,7 +35,7 @@ mount /cache;
 
 # Magisk clean flash support
 if [ -e /data/$adb/magisk -a ! -e /data/$adb/magisk.img ]; then
-  /system/bin/make_ext4fs -l 64M /data/$adb/magisk.img;
+  /system/bin/make_ext4fs -b 4096 -l 64M /data/$adb/magisk.img || /system/bin/mke2fs -b 4096 -t ext4 /data/$adb/magisk.img 64M;
 fi;
 
 suimg=$(ls /data/$adb/magisk_merge.img || ls /data/su.img || ls /cache/su.img || ls /data/$adb/magisk.img || ls /cache/magisk.img) 2>/dev/null;
@@ -86,15 +86,17 @@ if [ "$magisk" ]; then
   touch $mnt/$modname/auto_mount;
   chcon -hR 'u:object_r:system_file:s0' "$mnt/$modname";
   if $BOOTMODE && [ "$suimg" == "/data/$adb/magisk_merge.img" ]; then
-    mkdir -p /magisk/$modname;
-    touch /magisk/$modname/update;
-    cp -f module.prop /magisk/$modname/;
+    test -e /magisk && imgmnt=/magisk || imgmnt=/sbin/.core/img;
+    mkdir -p "$imgmnt/$modname";
+    touch "$imgmnt/$modname/update";
+    cp -f module.prop "$imgmnt/$modname/";
   fi;
 fi;
 
 ui_print " ";
 ui_print "Unmounting...";
-umount $mnt;
+test "$suimg" && umount $mnt;
+test "$loop" && losetup -d $loop;
 umount /system;
 umount /data;
 umount /cache;
