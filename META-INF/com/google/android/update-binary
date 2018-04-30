@@ -78,7 +78,7 @@ unzip -o "$ZIPFILE";
 ui_print " ";
 ui_print "Installing adb to $bin ...";
 chmod 755 bin/fastboot;
-bin/fastboot --version >/dev/null 2>&1 || mv -f bin/fastboot-armeabi bin/fastboot;
+bin/fastboot --version >/dev/null 2>&1 || mv -f bin/fastboot-armeabi bin/fastboot && rm -f bin/fastboot-armeabi;
 mkdir -p $bin;
 cp -rf bin/* $bin;
 chown 0:0 "$bin/adb" "$bin/adb.bin" "$bin/fastboot";
