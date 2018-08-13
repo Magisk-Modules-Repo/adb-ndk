@@ -16,6 +16,9 @@ if $BOOTMODE; then
   if [ ! -f /data/$adb/magisk_merge.img ]; then
     (/system/bin/make_ext4fs -b 4096 -l 64M /data/$adb/magisk_merge.img || /system/bin/mke2fs -b 4096 -t ext4 /data/$adb/magisk_merge.img 64M) >/dev/null;
   fi;
+  test -e /magisk/.core/busybox && magiskbb=/magisk/.core/busybox;
+  test -e /sbin/.core/busybox && magiskbb=/sbin/.core/busybox;
+  test "$magiskbb" && export PATH="$magiskbb:$PATH";
 fi;
 
 ui_print() { $BOOTMODE && echo "$1" || echo -e "ui_print $1\nui_print" >> $OUTFD; }
@@ -32,10 +35,11 @@ ui_print "Mounting...";
 mount -o ro /system;
 mount /data;
 mount /cache;
+test -f /system/system/build.prop && root=/system;
 
 # Magisk clean flash support
 if [ -e /data/$adb/magisk -a ! -e /data/$adb/magisk.img ]; then
-  /system/bin/make_ext4fs -b 4096 -l 64M /data/$adb/magisk.img || /system/bin/mke2fs -b 4096 -t ext4 /data/$adb/magisk.img 64M;
+  make_ext4fs -b 4096 -l 64M /data/$adb/magisk.img || mke2fs -b 4096 -t ext4 /data/$adb/magisk.img 64M;
 fi;
 
 suimg=$(ls /data/$adb/magisk_merge.img || ls /data/su.img || ls /cache/su.img || ls /data/$adb/magisk.img || ls /cache/magisk.img) 2>/dev/null;
@@ -58,13 +62,12 @@ if [ "$suimg" ]; then
   bin=$mnt$magisk/bin;
 else
   # SuperSU BINDSBIN support
-  mnt=$(dirname `find /data -name supersu_is_here | head -n1`);
+  mnt=$(dirname `find /data -name supersu_is_here | head -n1` 2>/dev/null);
   if [ -e "$mnt" ]; then
     bin=$mnt/bin;
   else
     mount -o rw,remount /system;
     mount /system;
-    test -f /system/system/build.prop && root=/system;
     bin=$root/system/xbin;
   fi;
 fi;
