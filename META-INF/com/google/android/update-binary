@@ -13,11 +13,12 @@ if $BOOTMODE; then
   OUTFD=/proc/self/fd/0;
   dev=/dev;
   devtmp=/dev/tmp;
-  if [ ! -f /data/$adb/magisk_merge.img ]; then
+  if [ ! -f /data/$adb/magisk_merge.img -a ! -e /data/adb/modules ]; then
     (/system/bin/make_ext4fs -b 4096 -l 64M /data/$adb/magisk_merge.img || /system/bin/mke2fs -b 4096 -t ext4 /data/$adb/magisk_merge.img 64M) >/dev/null;
   fi;
   test -e /magisk/.core/busybox && magiskbb=/magisk/.core/busybox;
   test -e /sbin/.core/busybox && magiskbb=/sbin/.core/busybox;
+  test -e /sbin/.magisk/busybox && magiskbb=/sbin/.magisk/busybox;
   test "$magiskbb" && export PATH="$magiskbb:$PATH";
 fi;
 
@@ -38,7 +39,7 @@ mount /cache;
 test -f /system/system/build.prop && root=/system;
 
 # Magisk clean flash support
-if [ -e /data/$adb/magisk -a ! -e /data/$adb/magisk.img ]; then
+if [ -e /data/$adb/magisk -a ! -e /data/$adb/magisk.img -a ! -e /data/adb/modules ]; then
   make_ext4fs -b 4096 -l 64M /data/$adb/magisk.img || mke2fs -b 4096 -t ext4 /data/$adb/magisk.img 64M;
 fi;
 
@@ -65,6 +66,10 @@ else
   mnt=$(dirname `find /data -name supersu_is_here | head -n1` 2>/dev/null);
   if [ -e "$mnt" ]; then
     bin=$mnt/bin;
+  elif [ -e "/data/adb/modules" ]; then
+    mnt=/data/adb/modules;
+    magisk=/$modname/system;
+    bin=$mnt$magisk/bin;
   else
     mount -o rw,remount /system;
     mount /system;
@@ -90,11 +95,16 @@ if [ "$magisk" ]; then
   cp -f module.prop $mnt/$modname/;
   touch $mnt/$modname/auto_mount;
   chcon -hR 'u:object_r:system_file:s0' "$mnt/$modname";
-  if $BOOTMODE && [ "$suimg" == "/data/$adb/magisk_merge.img" ]; then
-    test -e /magisk && imgmnt=/magisk || imgmnt=/sbin/.core/img;
-    mkdir -p "$imgmnt/$modname";
-    touch "$imgmnt/$modname/update";
-    cp -f module.prop "$imgmnt/$modname/";
+  if $BOOTMODE; then
+    if [ "$suimg" == "/data/$adb/magisk_merge.img" ]; then
+      test -e /magisk && imgmnt=/magisk || imgmnt=/sbin/.core/img;
+      test -e /sbin/.magisk/img && imgmnt=/sbin/.magisk/img;
+      mkdir -p "$imgmnt/$modname";
+      touch "$imgmnt/$modname/update";
+      cp -f module.prop "$imgmnt/$modname/";
+    elif [ "$mnt" == "/data/adb/modules" ]; then
+      touch "$mnt/$modname/update";
+    fi;
   fi;
 fi;
 
