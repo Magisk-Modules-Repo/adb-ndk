@@ -74,8 +74,7 @@ else
     magisk=/$modname/system;
     bin=$mnt$magisk/bin;
   else
-    mount -o rw,remount /system;
-    mount /system;
+    mount -o rw,remount /system || mount /system || mount -o rw,remount / && sar=1;
     bin=$root/system/xbin;
   fi;
 fi;
@@ -112,6 +111,7 @@ ui_print " ";
 ui_print "Unmounting...";
 test "$suimg" && umount $mnt;
 test "$loop" && losetup -d $loop;
+test "$sar" && mount -o ro,remount /;
 umount /system;
 umount /data;
 umount /cache;
