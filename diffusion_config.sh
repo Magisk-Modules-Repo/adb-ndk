@@ -7,6 +7,10 @@ AUTH_NAME="osm0sis @ xda-developers";
 USE_ARCH=false
 USE_ZIP_OPTS=true
 
+custom_setup() {
+  return # stub
+}
+
 custom_zip_opts() {
   return # stub
 }
