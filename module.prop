@@ -1,7 +1,7 @@
 id=adb-ndk
 name=ADB & Fastboot for Android NDK
-version=1.0.39
-versionCode=103918
+version=1.0.41
+versionCode=104100
 author=osm0sis & Surge1223 @ xda-developers
 description=Static ARM adb and fastboot binaries for Android built with the NDK
 support=https://forum.xda-developers.com/showthread.php?t=2239421

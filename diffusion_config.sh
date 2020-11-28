@@ -21,8 +21,14 @@ custom_target() {
 
 custom_install() {
   ui_print " ";
-  ui_print "Installing adb to $BIN ...";
-  set_perm 0 0 755 $BIN/adb $BIN/adb.bin $BIN/fastboot $BIN/fastboot-armeabi;
+  set_perm 0 0 755 $BIN/adb $BIN/adb.bin $BIN/adb.bin-armeabi $BIN/fastboot $BIN/fastboot-armeabi;
+  if $BIN/adb.bin --version >/dev/null 2>&1; then
+    ui_print "Installing adb to $BIN ...";
+    rm -f $BIN/adb.bin-armeabi;
+  else
+    ui_print "Installing adb (legacy) to $BIN ...";
+    mv -f $BIN/adb.bin-armeabi $BIN/adb.bin;
+  fi;
   if $BIN/fastboot --version >/dev/null 2>&1; then
     ui_print "Installing fastboot to $BIN ...";
     rm -f $BIN/fastboot-armeabi;
