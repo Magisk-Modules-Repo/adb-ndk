@@ -3,8 +3,8 @@
 *Static ARM adb and fastboot binaries for Android built with the NDK*
 
 ### Links
-* [GitHub](https://github.com/Magisk-Modules-Repo/adb-Installer)
-* [Support](https://bit.do/osm0)
+* [GitHub](https://github.com/Magisk-Modules-Repo/adb-ndk)
+* [Support](https://is.gd/osm0_)
 * [Sponsor](https://github.com/sponsors/osm0sis)
 * [Donate](https://www.paypal.me/osm0sis)
 
