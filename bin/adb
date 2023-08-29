@@ -6,5 +6,9 @@ dir="$(cd "$(dirname "$0")"; pwd)";
 
 export HOME=/sdcard;
 export TMPDIR=/data/local/tmp;
-$dir/adb.bin "$@";
+
+case $1 in
+  ""|help|--help|version|--version) $dir/adb.bin "$@" | sed 's/adb.bin/adb/';;
+  *) start adbd && $dir/adb.bin "$@";;
+esac;
 
