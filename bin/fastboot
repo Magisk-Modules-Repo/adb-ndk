@@ -8,7 +8,7 @@ case $1 in
   ""|help|--help|-h) $dir/fastboot.bin --help;;
   version|--version) $dir/fastboot.bin --version | sed 's/fastboot.bin/fastboot/';;
   *)
-    if [ "$USER" == "root" ]; then
+    if [ "$USER" == "root" -o "$(whoami 2>/dev/null)" == "root" ]; then
       $dir/fastboot.bin "$@";
     else
       echo "Must be root";
