@@ -21,21 +21,29 @@ custom_target() {
 
 custom_install() {
   ui_print " ";
-  set_perm 0 0 755 $BIN/adb $BIN/adb.bin $BIN/adb.bin-armeabi $BIN/fastboot $BIN/fastboot.bin $BIN/fastboot.bin-armeabi;
-  if $BIN/adb.bin --version >/dev/null 2>&1; then
-    ui_print "Installing adb to $BIN ...";
-    rm -f $BIN/adb.bin-armeabi;
+  set_perm 0 0 755 $BIN/adb $BIN/adb.bin-arm64 $BIN/adb.bin-arm $BIN/adb.bin-armeabi $BIN/fastboot $BIN/fastboot.bin-arm64 $BIN/fastboot.bin-arm $BIN/fastboot.bin-armeabi;
+  if $BIN/adb.bin-arm64 --version >/dev/null 2>&1; then
+    ui_print "Installing adb (arm64) to $BIN ...";
+    mv -f $BIN/adb.bin-arm64 $BIN/adb.bin;
+  elif $BIN/adb.bin-arm --version >/dev/null 2>&1; then
+    ui_print "Installing adb (arm) to $BIN ...";
+    mv -f $BIN/adb.bin-arm $BIN/adb.bin;
   else
     ui_print "Installing adb (legacy) to $BIN ...";
     mv -f $BIN/adb.bin-armeabi $BIN/adb.bin;
   fi;
-  if $BIN/fastboot.bin --version >/dev/null 2>&1; then
-    ui_print "Installing fastboot to $BIN ...";
-    rm -f $BIN/fastboot.bin-armeabi;
+  rm -f $BIN/adb.bin-arm*;
+  if $BIN/fastboot.bin-arm64 --version >/dev/null 2>&1; then
+    ui_print "Installing fastboot (arm64) to $BIN ...";
+    mv -f $BIN/fastboot.bin-arm64 $BIN/fastboot.bin;
+  elif $BIN/fastboot.bin-arm --version >/dev/null 2>&1; then
+    ui_print "Installing fastboot (arm) to $BIN ...";
+    mv -f $BIN/fastboot.bin-arm $BIN/fastboot.bin;
   else
     ui_print "Installing fastboot (legacy) to $BIN ...";
     mv -f $BIN/fastboot.bin-armeabi $BIN/fastboot.bin;
   fi;
+  rm -f $BIN/fastboot.bin-arm*;
 }
 
 custom_postinstall() {
